@@ -17,10 +17,6 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.chrome.options import Options
 from webdriver_manager.chrome import ChromeDriverManager
 
-
-## 1.2) Driver acces
-acces = "/Users/jules/Desktop/Scripts/chromedriver"
-
 ## 1.4) Custom functions & class
 class WebDriver:
 
@@ -72,17 +68,17 @@ class WebDriver:
             pass
         try:
             address = self.driver.find_element(by = By.CSS_SELECTOR, value = "[data-item-id='address']")
-            self.location_data["location"] = address.text
+            self.location_data["location"] = address.get_attribute('aria-label').split(':')[-1].strip()
         except:
             pass
         try:
             phone_number = self.driver.find_element(by = By.CSS_SELECTOR, value = "[data-item-id*='phone']")
-            self.location_data["contact"] = phone_number.text
+            self.location_data["contact"] = phone_number.get_attribute('data-item-id').split(':')[-1]
         except:
             pass
         try:
             website = self.driver.find_element(by = By.CSS_SELECTOR, value = "[data-item-id='authority']")
-            self.location_data["website"] = website.text
+            self.location_data["website"] = website.get_attribute('href')
         except:
             pass
         try:
@@ -318,22 +314,25 @@ def scroll_to_end_of_page(driver, scrollbox):
 
 def list_results_with_websites_from_scrollbox(scrollbox, w_websites, max_results:int = None):
     search_results_containers = scrollbox.find_elements(by = By.CSS_SELECTOR, value = "div[class ^= 'Nv2PK']")
-    search_results = [el.find_element(by = By.CSS_SELECTOR, value = 'a[class = hfpxzc]') for el in search_results_containers]
+    search_results = [
+        {
+            'container': el,
+            'result': el.find_element(by = By.CSS_SELECTOR, value = 'a[class = hfpxzc]')
+            }
+            for el in search_results_containers]
+
     to_keep = []
+    print(f'nb search results : {len(search_results)}')
 
     for elm in search_results:
         if not w_websites:
-            to_keep.append(elm)
+            to_keep.append(elm.get('result'))
             continue
 
-        aria_label = elm.get_attribute('aria-label')
-        css = f"div[aria-label = '{aria_label}']"
-        
-        # To fix
+        # To fix --> OK
         try :
-            test_website = scrollbox.find_element(by = By.CSS_SELECTOR, value = css)
-            test_website.find_element(by = By.CSS_SELECTOR, value = 'a[data-value*=Web]')
-            to_keep.append(elm)
+            elm.get('container').find_element(by = By.CSS_SELECTOR, value = 'a[aria-label*=website]')
+            to_keep.append(elm.get('result'))
         except :
             continue
 

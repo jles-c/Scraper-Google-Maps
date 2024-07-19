@@ -80,6 +80,7 @@ for kw in keywords_list:
             url = "https://www.google.com/maps/search/" + clean_text(kw)+" "+loc
         else : 
             url = "https://www.google.com/maps/search/" + clean_text(kw)+" "+loc +" "+ country
+        url+='?hl=en'
         progressBar("gmaps_search_urls...", value, endvalue, bar_length = 50, width = 20)
         value+=1
         
