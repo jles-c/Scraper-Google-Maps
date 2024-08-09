@@ -206,17 +206,12 @@ def click_first_suggestion(driver):
 
 def collect_pages_result(driver, w_websites, do_scroll = False, max_results:int = None):
     # Collect the current page results
-    print('locate pane')
     pane = WebDriverWait(driver, 3).until(EC.visibility_of_element_located((By.CSS_SELECTOR, "div[role='main']")))
-    print("pane located")
-    print('locate scroll element')
-    # time.sleep(3)
     scrollbox = WebDriverWait(pane, 3).until(
         EC.visibility_of_element_located((By.CSS_SELECTOR, "div[role='feed']")))
     
     # Scroll to bottom of page
     if do_scroll:
-        print('scrolling...')
         scroll_to_end_of_page(driver, scrollbox)
 
     # Collect all results elements and add the href to results
@@ -224,7 +219,6 @@ def collect_pages_result(driver, w_websites, do_scroll = False, max_results:int 
 
 def click_next_page(driver):
     try : # Check if next page exists
-        
         next_page = WebDriverWait(driver, 3).until(
             EC.element_to_be_clickable((By.CSS_SELECTOR, "button[id=ppdPk-Ej1Yeb-LgbsSe-tJiF1e]")))
         next_page.click()
@@ -303,8 +297,8 @@ def scroll_to_end_of_page(driver, scrollbox):
         if np.random.random()>=0.9:
             sleep = np.random.random()*2
             time.sleep(sleep)
-            print(f'sleep for {sleep} secs...')
-            print(f'time before timeout: {timeout_loc - (time.time()-time_start)}')
+            print(f'sleep for {sleep:.2f} secs...')
+            print(f'time before timeout: {timeout_loc - (time.time()-time_start):.2f}')
         if driver.find_elements(by = By.XPATH, value = end_of_results_xpath):
                 # print("end of page")
                 break

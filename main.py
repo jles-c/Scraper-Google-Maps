@@ -17,6 +17,7 @@ from selenium.webdriver.chrome.service import Service as ChromeService
 import pandas as pd
 import time
 import datetime
+import re
 
 # IMPORTS AND CUSTOM FUNCTIONS
 from imports import WebDriver, clean_text, progressBar, send_gmaps_search, click_first_suggestion, collect_pages_result, click_next_page, no_results, get_date, get_duration, get_unique_urls_serie, input_country_kw_cities
@@ -101,7 +102,15 @@ for kw in keywords_list:
             # try: # Collect current page results
                 # time.sleep(1)
                 #print("start collecting results")
-        results_gmap_url += collect_pages_result(driver, w_websites, do_scroll, max_results)
+        try:
+            results_gmap_url += collect_pages_result(driver, w_websites, do_scroll, max_results)
+        
+        except:
+            if re.match('/maps/place', driver.current_url):
+                city_dict[loc] = [driver.current_url]
+            else:
+                print(f'error : {driver.current_url}')
+                continue
 
             # except: #redirect to first_suggestion if not already checked and if not "Aucun résultat"
             #     #print("except while collecting results")
@@ -194,8 +203,8 @@ results_df['duration'] = get_duration(start, end)
 new_cols = results_df.columns.tolist()[1:]+results_df.columns.tolist()[:1]
 results_df = results_df[new_cols] ## Move first column to last position
 
-result_file_name = f"results/{country}_{keywords_list[0]}_{datetime.date.strftime(datetime.date.today(),'%Y-%m-%d')}.csv"
-results_df.to_csv(result_file_name)
+result_file_name = f"results/{country}_{keywords_list[0]}_{datetime.date.strftime(datetime.datetime.now(),'%Y-%m-%d-%H-%M-%S')}.csv"
+results_df.to_csv(result_file_name, index=False)
 
 print("-"*30)
 print(f"Duration : {get_duration(start, end)}")
