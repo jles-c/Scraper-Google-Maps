@@ -35,18 +35,19 @@ else:
     max_results = int(max_results)
     print(f'max results : {max_results}')
 
-if do_scroll in ('', 'Y'):
+if do_scroll in ('', 'Y','y'):
     do_scroll = True
+    print('Scrolling to retrieve all results')
 else:
     do_scroll = False
 
 w_websites = input("Only results with website ? (Y/n - Press enter for yes):")
 
-if w_websites in ('', 'Y'):
+if w_websites in ('', 'Y','y'):
     w_websites = True
     unique_websites = input("One result per website ? (Y/n - Press enter for yes):")
 
-    if unique_websites in ('', 'Y'):
+    if unique_websites in ('', 'Y','y'):
         unique_websites = True
         print('Scraping one result per website')
 

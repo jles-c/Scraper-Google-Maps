@@ -285,25 +285,41 @@ def input_country_kw_cities(Input_city_dict, countries_dict):
     return country, keywords_list, locations_list
 
 def scroll_to_end_of_page(driver, scrollbox):
+    """
+    Scrolls to the end of a scrollable element on a webpage using Selenium.
+    Args:
+        driver (selenium.webdriver): The Selenium WebDriver instance controlling the browser.
+        scrollbox (selenium.webdriver.remote.webelement.WebElement): The scrollable element to scroll within.
+    Returns:
+        None
+    Notes:
+        - The function will scroll within the provided scrollbox element until it finds an element matching the 
+          `end_of_results_xpath` or until the timeout is reached.
+        - The function includes random sleep intervals to mimic human behavior and avoid detection.
+        - The function uses an offset to adjust the scroll origin and a fixed scroll amount for each scroll action.
+    """
     time_start = time.time()
     timeout_loc = 30
     end_of_results_xpath = '//div[starts-with(@class,"PbZDve")]'
+    OFFSET = 10
+    SCROLL_AMOUNT = 500
     Sx, Sy = scrollbox.location.values()
-    Sx += 10
-    Sy += 10
-    scroll_origin = ScrollOrigin.from_viewport(Sx+10, Sy+10)
-
-    while time.time()-time_start <= timeout_loc:
-        if np.random.random()>=0.9:
-            sleep = np.random.random()*2
-            time.sleep(sleep)
-            print(f'sleep for {sleep:.2f} secs...')
-            print(f'time before timeout: {timeout_loc - (time.time()-time_start):.2f}')
-        if driver.find_elements(by = By.XPATH, value = end_of_results_xpath):
-                # print("end of page")
-                break
-
-        ActionChains(driver).scroll_from_origin(scroll_origin,0,10000).perform()
+    Sx += OFFSET
+    Sy += OFFSET
+    scroll_origin = ScrollOrigin.from_viewport(Sx + OFFSET, Sy + OFFSET)
+    
+    while time.time() - time_start <= timeout_loc:
+        current_time = time.time()
+        if np.random.random() >= 0.9:
+            sleep_duration = np.random.random() * 2
+            time.sleep(sleep_duration)
+            print(f'sleep for {sleep_duration} secs...')
+            print(f'time before timeout: {timeout_loc - (current_time - time_start)}')
+        
+        if driver.find_elements(by=By.XPATH, value=end_of_results_xpath):
+            break
+        
+        ActionChains(driver).scroll_from_origin(scroll_origin, 0, SCROLL_AMOUNT).perform()
         time.sleep(0.2)
 
 def list_results_with_websites_from_scrollbox(scrollbox, w_websites, max_results:int = None):
